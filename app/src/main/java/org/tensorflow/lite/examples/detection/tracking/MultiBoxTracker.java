@@ -164,46 +164,19 @@ public class MultiBoxTracker {
     for (final TrackedRecognition recognition : trackedObjects) {
       RectF trackedPos = new RectF(recognition.location);
       if (!recognition.title.equals("person")) continue;
-//      trackedPos.left = trackedPos.left*((float)1280/480);
-//      trackedPos.right = trackedPos.right*((float)1280/480);
-//      Log.i(TAG, "AFTER:" + trackedPos.left + "  " +trackedPos.right);
 
 //      Log.i(TAG, "canvasH :" + canvas.getHeight()+ " canvasW" +canvas.getWidth()); // canvasH :647 canvasW1280
 
-//      trackedPos.left = trackedPos.left*((float)1280/720);
-//      trackedPos.right = trackedPos.right*((float)1280/480);
-//      trackedPos.top = trackedPos.top*(480/300);
-//      trackedPos.bottom = trackedPos.bottom*(480/300);
-
       float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 10.0f;
 
-//      float x_dist = 1150;
-//      float y_dist = 647;
-//
-//      float cx = (float) (x_dist/2.0);
-//      float cy = (float) (y_dist/2.0);
-
-//      float left    = (float) 506.155;
-//      float right   = (float) 931.8232;
-//      float top     = (float) -1.334;
-//      float bottom  = (float) 109.788;
-//
-//      float x2F = ( ((right-cx) * cy) / cx) + cy;
-//      float y1F = ( ((cy-top) * cx)   / cy) + cx;
-//
-//      float x1F = ( ((left-cx) * cy)  / cx) + cy;
-//      float y2F = ( ((cy-bottom) * cy)/ cy) + cx;
-//      Log.i(TAG, "x1F: "+ x1F + "x2F: "+ x2F + "y1F: "+ y1F + "y2F: "+ y2F+ " cx-x1 "+ (cx-left));
 //===================================
       // To identify if the object is a person
-//      Log.i(TAG, "detectionConf" + recognition.detectionConfidence+" obj: "+recognition.title);
-
       if (recognition.title.equals("person")) {
         Matrix matrix = new Matrix();
         Log.i(TAG, "FOUND!");
-//        Log.i(TAG, "BEFORE :" + trackedPos.left + "  " +trackedPos.top +" " +trackedPos.right+ " "+trackedPos.bottom);
 
 //=====
+        // For display size (640 * 480) having corresponding values as (865*640)
         matrix.setScale((float)(480.0/640.0), (float)(640.0/480.0), (float)(640.0/2.0), (float) (480.0/2.0));
         matrix.mapRect(trackedPos);
 
