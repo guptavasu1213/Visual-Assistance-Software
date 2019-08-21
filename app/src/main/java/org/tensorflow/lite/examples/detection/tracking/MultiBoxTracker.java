@@ -129,20 +129,21 @@ public class MultiBoxTracker {
     return frameToCanvasMatrix;
   }
 
-//===================================
+
   public synchronized void draw(final Canvas canvas, Context context) {
+    //===================================
     // Vibrator is defined amongst the class private members
     vibrator = (Vibrator) context.getSystemService(VIBRATOR_SERVICE);
 
-    // DRAWING THE MIDDLE RECTANGLE
+    // DRAWING THE MIDDLE RECTANGLE- representing line of sight
+    //    final RectF midRect = new RectF((float)(canvas.getWidth()/2)-50,(float)0,(float)(canvas.getWidth()/2)+50,(float)canvas.getHeight());
 
-//    final RectF midRect = new RectF((float)(canvas.getWidth()/2)-50,(float)0,(float)(canvas.getWidth()/2)+50,(float)canvas.getHeight());
-//    Hardcoding values for EPSON-BT-300 device
+    // Hardcoding values for EPSON-BT-300 device
       final RectF midRect = new RectF((float)(865.0/2.0)-100,(float)0,(float)(865.0/2.0),(float)canvas.getHeight());
       boxPaint.setColor(Color.RED);
       canvas.drawRect(midRect, boxPaint);
 
-//===================================
+    //===================================
 
     final boolean rotated = sensorOrientation % 180 == 90;
     final float multiplier =
@@ -165,17 +166,16 @@ public class MultiBoxTracker {
       RectF trackedPos = new RectF(recognition.location);
       if (!recognition.title.equals("person")) continue;
 
-//      Log.i(TAG, "canvasH :" + canvas.getHeight()+ " canvasW" +canvas.getWidth()); // canvasH :647 canvasW1280
+    //      Log.i(TAG, "canvasH :" + canvas.getHeight()+ " canvasW" +canvas.getWidth()); // canvasH :647 canvasW1280
 
       float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 10.0f;
 
-//===================================
+    //===================================
       // To identify if the object is a person
       if (recognition.title.equals("person")) {
         Matrix matrix = new Matrix();
         Log.i(TAG, "FOUND!");
 
-//=====
         // For display size (640 * 480) having corresponding values as (865*640)
         matrix.setScale((float)(480.0/640.0), (float)(640.0/480.0), (float)(640.0/2.0), (float) (480.0/2.0));
         matrix.mapRect(trackedPos);
@@ -185,7 +185,6 @@ public class MultiBoxTracker {
 
         matrix.setScale((float)(865.0/640.0), (float)(647.0/480.0));
         matrix.mapRect(trackedPos);
-//=====
 
         //=======================================================
         // WORKING CODE FOR 1280*720
