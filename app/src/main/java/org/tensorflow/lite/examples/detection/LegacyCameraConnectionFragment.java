@@ -104,12 +104,12 @@ public class LegacyCameraConnectionFragment extends Fragment {
           Camera.Size s = camera.getParameters().getPreviewSize();
 //=================================================================
 //          STRETCHED VIEW
-          camera.addCallbackBuffer(new byte[ImageUtils.getYUVByteSize(s.width, s.height)]); // ++++++++++
-          textureView.setAspectRatio(s.width, s.height);// ++++++++++
+          camera.addCallbackBuffer(new byte[ImageUtils.getYUVByteSize(s.width, s.height)]);
+          textureView.setAspectRatio(s.width, s.height);
 
           // SQUARE VIEW
-//          camera.addCallbackBuffer(new byte[ImageUtils.getYUVByteSize(s.height, s.width)]); // ++++++++++
-//          textureView.setAspectRatio(s.height, s.width);// ++++++++++
+//          camera.addCallbackBuffer(new byte[ImageUtils.getYUVByteSize(s.height, s.width)]);
+//          textureView.setAspectRatio(s.height, s.width);
           Log.i(TAG, "Height: "+s.height+"\tWidth: "+s.width);
 //=================================================================
           camera.startPreview();
