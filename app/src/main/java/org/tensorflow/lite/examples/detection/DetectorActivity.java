@@ -199,7 +199,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
 
               final List<Classifier.Recognition> results = detector.recognizeImage(rotatedBitmap);
   //================================
-//              final List<Classifier.Recognition> results = detector.recognizeImage(croppedBitmap);
 
               lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
 
@@ -211,51 +210,18 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
               paint.setStrokeWidth(2.0f);
 
               float minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
-              // ========================
-              // ANDROID STUDIO RECOMMENDATION..
-//              if (MODE == DetectorMode.TF_OD_API) {
-//                minimumConfidence = MINIMUM_CONFIDENCE_TF_OD_API;
-//              }
-              // ========================
               final List<Classifier.Recognition> mappedRecognitions =
                       new LinkedList<>();
 
               for (final Classifier.Recognition result : results) {
                 final RectF location = result.getLocation();
 
-                // DEV CHECK------------------+++++++++++++
-                //              Log.i(TAG, location + "- LOCATION");
-                // DRAWING THE RECTANGLE
-  //              final RectF loc = new RectF((float)100.000000,(float)100.000000,(float)150.000000,(float)150.000000);
-  //              canvas.drawRect(loc, paint);
-  //              cropToFrameTransform.mapRect(loc);
-  //
-  //              result.setLocation(loc);
-  //              mappedRecognitions.add(result);
-  //              // DEV CHECK------------------+++++++++++++
-
                 if (location != null && result.getConfidence() >= minimumConfidence) {
                   canvas1.drawRect(location, paint);
 
-//                    Log.i(TAG, "Before: "+location);
                     cropToFrameTransform.mapRect(location);
-//                    Log.i(TAG, "After: "+location);
                   result.setLocation(location);
                   mappedRecognitions.add(result);
-
-  //                if (loc.intersects(location.left, location.top, location.right, location.bottom)){
-  //                  Log.i(TAG, result.getTitle()+" Intersects-----------"+ result.getLocation());
-  //                }
-
-  //                if (result.getTitle().equals("person")) {
-  //                  Log.i(TAG, "XL: " + location.left + "\tXR: " + location.right + "\tObj: " + result.getTitle() + " \tConfidence: " + result.getConfidence());
-  //                }
-  //
-  //
-  //                if ((location.left > loc.left && location.right < loc.right) || (location.top > loc.top && location.bottom < loc.bottom)) {
-  //                  Log.i(TAG, result.getTitle() + " \t- Confidence: " + result.getConfidence() + " the frame+++++++++++++++++++++++++++++++++++");
-  //                }
-
                 }
               }
 
