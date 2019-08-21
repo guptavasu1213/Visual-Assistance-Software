@@ -78,9 +78,6 @@ public class MultiBoxTracker {
   Vibrator vibrator;
 
   public MultiBoxTracker(final Context context) {
-//    Vibrator vibrator;
-//    vibrator = (Vibrator) context.getSystemService(VIBRATOR_SERVICE);
-//    vibrator.vibrate(500);
 
     for (final int color : COLORS) {
       availableColors.add(color);
@@ -136,33 +133,15 @@ public class MultiBoxTracker {
   public synchronized void draw(final Canvas canvas, Context context) {
     // Vibrator is defined amongst the class private members
     vibrator = (Vibrator) context.getSystemService(VIBRATOR_SERVICE);
-//    vibrator.vibrate(500); // RUNS WHEN WE CLOSE THE APP FOR SOME REASON- On the phone-Works on the device
 
     // DRAWING THE MIDDLE RECTANGLE
 
 //    final RectF midRect = new RectF((float)(canvas.getWidth()/2)-50,(float)0,(float)(canvas.getWidth()/2)+50,(float)canvas.getHeight());
+//    Hardcoding values for EPSON-BT-300 device
       final RectF midRect = new RectF((float)(865.0/2.0)-100,(float)0,(float)(865.0/2.0),(float)canvas.getHeight());
       boxPaint.setColor(Color.RED);
       canvas.drawRect(midRect, boxPaint);
 
-    // SIDE Verification
-//    final RectF loc1 = new RectF((float)1062.79886,(float)256.0452,(float)1282.63,(float)471.007);
-////    final RectF loc1 = new RectF((float)450.000000,(float)0,(float)650.000000,(float)canvas.getHeight());
-//    boxPaint.setColor(Color.RED);
-//    canvas.drawRect(loc1, boxPaint);
-
-//    final RectF loc2 = new RectF((float)954.858349,(float)284.7672,(float)1152.36,(float)487.68227);
-//    boxPaint.setColor(Color.GREEN);
-//    canvas.drawRect(loc2, boxPaint);
-
-//    if (detected == 1){
-//      Log.i(TAG, "No person in the frame"); // TAG= "ContentValues"
-//      detected = 0;
-//    }
-
-//    if (Integer.compare(counter,counter) ){
-//     Log.i(TAG, "No person in the frame"); // TAG= "ContentValues"
-//    }
 //===================================
 
     final boolean rotated = sensorOrientation % 180 == 90;
@@ -179,20 +158,6 @@ public class MultiBoxTracker {
             (int) (multiplier * (rotated ? frameWidth : frameHeight)),
             sensorOrientation,
             false);
-//==============
-//    Fwidth:1280Fheight720
-//    Log.i(TAG, "Fwidth:" + frameWidth+ "Fheight" +frameHeight); // TAG= "ContentValues"
-
-
-//    final RectF test_rect = new RectF((float)0,(float)0,(float)640.0,(float)480);
-//    boxPaint.setColor(Color.BLUE);
-//    canvas.drawRect(test_rect, boxPaint);
-//
-//    final RectF test_rect2 = new RectF((float)0,(float)0,(float)865,(float)610);
-//    boxPaint.setColor(Color.YELLOW);
-//    canvas.drawRect(test_rect2, boxPaint);
-//==============
-
 
     // 0 Denotes "no person detected" // 1 denotes "person detected"
     Integer detected_in_current_frame = new Integer(0);
