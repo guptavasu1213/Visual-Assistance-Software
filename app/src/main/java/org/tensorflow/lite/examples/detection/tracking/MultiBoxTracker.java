@@ -231,7 +231,6 @@ public class MultiBoxTracker {
         detected_realtime = 0;
     }
   }
-//===================================
 
 
   private void processResults(final List<Recognition> results) {
@@ -275,7 +274,6 @@ public class MultiBoxTracker {
       trackedRecognition.title = potential.second.getTitle();
       trackedRecognition.color = COLORS[trackedObjects.size()];
       trackedObjects.add(trackedRecognition);
-      Log.i(TAG, "OUT##############");
 
       if (trackedObjects.size() >= COLORS.length) {
         break;
