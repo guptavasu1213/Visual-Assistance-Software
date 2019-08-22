@@ -74,7 +74,16 @@ public class MultiBoxTracker {
   private int frameWidth;
   private int frameHeight;
   private int sensorOrientation;
-  private Integer detected_realtime = new Integer(0); // 0 for no person // 1 for person
+  private Integer detected_realtime = new Integer(1); // 0 for no person // 1 for person
+  private Integer person_found = new Integer(0); // 0 for no person // 1 for person
+                                                       // 2 for informed the user before
+//  private boolean person_in_frame = false;
+
+
+  private Integer los_or_out = new Integer(1); // 0 for LOS // 1 for out
+  private Integer previous_frame = new Integer(3); // 0 for no person // 1 for person
+
+
   Vibrator vibrator;
 
   public MultiBoxTracker(final Context context) {
@@ -160,84 +169,191 @@ public class MultiBoxTracker {
             sensorOrientation,
             false);
 
-    // 0 Denotes "no person detected" // 1 denotes "person detected"
-    Integer detected_in_current_frame = new Integer(0);
-    for (final TrackedRecognition recognition : trackedObjects) {
-      RectF trackedPos = new RectF(recognition.location);
-      if (!recognition.title.equals("person")) continue;
+    // Change of situation has occurred
+    if (person_found == 1){
+      person_found = 0;
+    }
 
-    //      Log.i(TAG, "canvasH :" + canvas.getHeight()+ " canvasW" +canvas.getWidth()); // canvasH :647 canvasW1280
+    for (final TrackedRecognition recognition2 : trackedObjects){
+      if (recognition2.title.equals("person")){
+        person_found = 1; // meaning there is a person detected
+      }
+    }
+    // When there is no person found - FIRST TIME
+    if (person_found == 0){
+      Log.i(TAG, "No person in the frame -100"); // TAG= "ContentValues"
+      vibrator.vibrate(100);
+      person_found = 2;
+    }
+    else if (person_found == 1){ // When there is someone in the frame
 
-      float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 10.0f;
+      los_or_out = 2; // Initialized at every frame
 
-    //===================================
-      // To identify if the object is a person
-      if (recognition.title.equals("person")) {
-        Matrix matrix = new Matrix();
-        Log.i(TAG, "FOUND!");
+      // 0 Denotes "no person detected" // 1 denotes "person detected"
+      Integer detected_in_current_frame = new Integer(0);
+      for (final TrackedRecognition recognition : trackedObjects) {
+        RectF trackedPos = new RectF(recognition.location);
+        if (!recognition.title.equals("person")) continue;
 
-        // For display size (640 * 480) having corresponding values as (865*640)
-        matrix.setScale((float)(480.0/640.0), (float)(640.0/480.0), (float)(640.0/2.0), (float) (480.0/2.0));
-        matrix.mapRect(trackedPos);
+        //      Log.i(TAG, "canvasH :" + canvas.getHeight()+ " canvasW" +canvas.getWidth()); // canvasH :647 canvasW1280
 
-        matrix.setRotate(90, (float)(640.0/2.0), (float) (((float)480.0/2.0)));
-        matrix.mapRect(trackedPos);
+        float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 10.0f;
 
-        matrix.setScale((float)(865.0/640.0), (float)(647.0/480.0));
-        matrix.mapRect(trackedPos);
 
-        //=======================================================
-        // WORKING CODE FOR 1280*720
+        // Scaling the rectangle matrix according to the screen size
+          Matrix matrix = new Matrix();
+          Log.i(TAG, "FOUND!");
+
+          // For display size (640 * 480) having corresponding values as (865*640)
+          matrix.setScale((float) (480.0 / 640.0), (float) (640.0 / 480.0), (float) (640.0 / 2.0), (float) (480.0 / 2.0));
+          matrix.mapRect(trackedPos);
+
+          matrix.setRotate(90, (float) (640.0 / 2.0), (float) (((float) 480.0 / 2.0)));
+          matrix.mapRect(trackedPos);
+
+          matrix.setScale((float) (865.0 / 640.0), (float) (647.0 / 480.0));
+          matrix.mapRect(trackedPos);
+
+          //=======================================================
+          // WORKING CODE FOR 1280*720
 //        matrix.setScale((float)(647.0/1150.0), (float)(1150.0/647.0), (float)(1150.0/2.0), (float) (((float)647.0/2.0)));
 //        matrix.mapRect(trackedPos);
 //
 //        matrix.setRotate(90, (float)(1280.0/2.0), (float) (((float)647.0/2.0)));
 //        matrix.mapRect(trackedPos);
-        //=======================================================
+          //=======================================================
 
 
-        boxPaint.setColor(recognition.color);
+          boxPaint.setColor(recognition.color);
 
 //        canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
-        canvas.drawRect(trackedPos, boxPaint); // -- To have rectangular edges
+          canvas.drawRect(trackedPos, boxPaint); // -- To have rectangular edges
 
 
-        final String labelString =
-                !TextUtils.isEmpty(recognition.title)
-                        ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
-                        : String.format("%.2f", (100 * recognition.detectionConfidence));
+          final String labelString =
+                  !TextUtils.isEmpty(recognition.title)
+                          ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
+                          : String.format("%.2f", (100 * recognition.detectionConfidence));
 
-        borderedText.drawText(
-                canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
+          borderedText.drawText(
+                  canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
 
-        // When the detected person is in the rectangle
-        if (midRect.intersects(trackedPos.left, trackedPos.top, trackedPos.right, trackedPos.bottom)){
-          detected_in_current_frame = 1; // 1 denotes that the person is found in the frame
-          if (detected_realtime == 0){ // When there was no person in the mid-rectangle before
-            Log.i(TAG, "Person in the frame"); // TAG= "ContentValues"
-            vibrator.vibrate(500);
-          }
+
+        // In LOS
+        if (midRect.intersects(trackedPos.left, trackedPos.top, trackedPos.right, trackedPos.bottom)) {
+          vibrator.vibrate(500);
+          los_or_out = 0;
+
           boxPaint.setColor(Color.GREEN); // Changing the box color to green
           canvas.drawRect(midRect, boxPaint);
-          detected_realtime = 1;
+        }
+        // In the frame, but not in LOS
+        else{
+          // As we prioritize LOS over around, so our result will be LOS if we even found one person
+          // in the LOS, but if we didn't, then we give our result as around.
+          if (los_or_out != 0){
+            los_or_out = 1; // Not in the LOS
+          }
         }
       }
-    }
-    // If the person is not found in the current frame but was present in the previous frame
-    if (detected_in_current_frame == 0 && detected_realtime == 1){
-        Log.i(TAG, "No person in the frame anymore"); // TAG= "ContentValues"
-        vibrator.vibrate(200);
-        detected_realtime = 0;
+      // When the result of the frame was a person in the LOS and the previous frame did not show
+      // the same result
+      if (los_or_out == 0 && previous_frame != 0){
+        Log.i(TAG, "Person in the Line of Sight - 500"); // TAG= "ContentValues"
+        vibrator.vibrate(500);
+        previous_frame = 0;
+      }
+      // When the result of the frame was a person in the frame, but not in LOS and the previous
+      // frame did not show the same result
+      else if (los_or_out == 1 && previous_frame != 1){
+        Log.i(TAG, "No person in the Line of sight (but in the frame) - 250"); // TAG= "ContentValues"
+        vibrator.vibrate(250);
+        previous_frame = 1;
+      }
     }
   }
+/*
+*       // 0 Denotes "no person detected" // 1 denotes "person detected"
+      Integer detected_in_current_frame = new Integer(0);
+      for (final TrackedRecognition recognition : trackedObjects) {
+        RectF trackedPos = new RectF(recognition.location);
+        if (!recognition.title.equals("person")) continue;
 
+        //      Log.i(TAG, "canvasH :" + canvas.getHeight()+ " canvasW" +canvas.getWidth()); // canvasH :647 canvasW1280
+
+        float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 10.0f;
+
+        //===================================
+        // To identify if the object is a person
+        if (recognition.title.equals("person")) {
+          Matrix matrix = new Matrix();
+          Log.i(TAG, "FOUND!");
+
+          // For display size (640 * 480) having corresponding values as (865*640)
+          matrix.setScale((float) (480.0 / 640.0), (float) (640.0 / 480.0), (float) (640.0 / 2.0), (float) (480.0 / 2.0));
+          matrix.mapRect(trackedPos);
+
+          matrix.setRotate(90, (float) (640.0 / 2.0), (float) (((float) 480.0 / 2.0)));
+          matrix.mapRect(trackedPos);
+
+          matrix.setScale((float) (865.0 / 640.0), (float) (647.0 / 480.0));
+          matrix.mapRect(trackedPos);
+
+          //=======================================================
+          // WORKING CODE FOR 1280*720
+//        matrix.setScale((float)(647.0/1150.0), (float)(1150.0/647.0), (float)(1150.0/2.0), (float) (((float)647.0/2.0)));
+//        matrix.mapRect(trackedPos);
+//
+//        matrix.setRotate(90, (float)(1280.0/2.0), (float) (((float)647.0/2.0)));
+//        matrix.mapRect(trackedPos);
+          //=======================================================
+
+
+          boxPaint.setColor(recognition.color);
+
+//        canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
+          canvas.drawRect(trackedPos, boxPaint); // -- To have rectangular edges
+
+
+          final String labelString =
+                  !TextUtils.isEmpty(recognition.title)
+                          ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
+                          : String.format("%.2f", (100 * recognition.detectionConfidence));
+
+          borderedText.drawText(
+                  canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
+
+          // When the detected person is in the rectangle
+          if (midRect.intersects(trackedPos.left, trackedPos.top, trackedPos.right, trackedPos.bottom)) {
+            detected_in_current_frame = 1; // 1 denotes that the person is found in the frame
+            if (detected_realtime == 0) { // When there was no person in the mid-rectangle before
+              Log.i(TAG, "Person in the Line of Sight - 500"); // TAG= "ContentValues"
+              vibrator.vibrate(500);
+            }
+            boxPaint.setColor(Color.GREEN); // Changing the box color to green
+            canvas.drawRect(midRect, boxPaint);
+            detected_realtime = 1;
+          }
+
+        }
+      }
+      // If the person is not found in the current frame but was present in the previous frame
+      if (detected_in_current_frame == 0 && detected_realtime == 1) {
+        Log.i(TAG, "No person in the Line of sight anymore (but in the frame) - 250"); // TAG= "ContentValues"
+        vibrator.vibrate(250);
+        detected_realtime = 0;
+      }
+    }
+
+*
+*
+* */
 
   private void processResults(final List<Recognition> results) {
     final List<Pair<Float, Recognition>> rectsToTrack = new LinkedList<Pair<Float, Recognition>>();
 
     screenRects.clear();
     final Matrix rgbFrameToScreen = new Matrix(getFrameToCanvasMatrix());
-//    rgbFrameToScreen.
     for (final Recognition result : results) {
       if (result.getLocation() == null) {
         continue;
