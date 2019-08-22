@@ -76,9 +76,7 @@ public class MultiBoxTracker {
   private int frameWidth;
   private int frameHeight;
   private int sensorOrientation;
-  private Integer person_found = 0; // 0 for no person // 1 for person
-                                                       // 2 for informed the user before
-//  private boolean person_in_frame = false;
+  private Integer person_found = 0; // 0 for no person;  1 for person; 2 for informed the user before
 
 
   private Integer los_or_out = 1; // 0 for LOS // 1 for out
@@ -184,7 +182,7 @@ public class MultiBoxTracker {
     if (person_found == 0){
       Log.i(TAG, "No person in the frame -100"); // TAG= "ContentValues"
       vibrator.vibrate(100);
-      person_found = 2;
+      person_found = 2; // Marking that the user has been informed once
       previous_frame = 3; // Making it changing scenarios
     }
     else if (person_found == 1){ // When there is someone in the frame
@@ -202,7 +200,6 @@ public class MultiBoxTracker {
 
         // Scaling the rectangle matrix according to the screen size
           Matrix matrix = new Matrix();
-          Log.i(TAG, "FOUND!");
 
           // For display size (640 * 480) having corresponding values as (865*640)
           matrix.setScale((float) (480.0 / 640.0), (float) (640.0 / 480.0), (float) (640.0 / 2.0), (float) (480.0 / 2.0));
