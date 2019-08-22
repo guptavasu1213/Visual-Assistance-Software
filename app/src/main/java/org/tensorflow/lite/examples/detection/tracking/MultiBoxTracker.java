@@ -15,6 +15,7 @@ limitations under the License.
 
 package org.tensorflow.lite.examples.detection.tracking;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -40,6 +41,7 @@ import org.tensorflow.lite.examples.detection.tflite.Classifier.Recognition;
 
 import static android.content.ContentValues.TAG;
 import static android.content.Context.VIBRATOR_SERVICE;
+import static java.lang.String.*;
 
 /** A tracker that handles non-max suppression and matches existing objects to new detections. */
 public class MultiBoxTracker {
@@ -63,10 +65,10 @@ public class MultiBoxTracker {
     Color.parseColor("#AA33AA"),
     Color.parseColor("#0D0068")
   };
-  final List<Pair<Float, RectF>> screenRects = new LinkedList<Pair<Float, RectF>>();
+  private final List<Pair<Float, RectF>> screenRects = new LinkedList<>();
   private final Logger logger = new Logger();
-  private final Queue<Integer> availableColors = new LinkedList<Integer>();
-  private final List<TrackedRecognition> trackedObjects = new LinkedList<TrackedRecognition>();
+  private final Queue<Integer> availableColors = new LinkedList<>();
+  private final List<TrackedRecognition> trackedObjects = new LinkedList<>();
   private final Paint boxPaint = new Paint();
   private final float textSizePx;
   private final BorderedText borderedText;
@@ -74,17 +76,16 @@ public class MultiBoxTracker {
   private int frameWidth;
   private int frameHeight;
   private int sensorOrientation;
-  private Integer detected_realtime = new Integer(1); // 0 for no person // 1 for person
-  private Integer person_found = new Integer(0); // 0 for no person // 1 for person
+  private Integer person_found = 0; // 0 for no person // 1 for person
                                                        // 2 for informed the user before
 //  private boolean person_in_frame = false;
 
 
-  private Integer los_or_out = new Integer(1); // 0 for LOS // 1 for out
-  private Integer previous_frame = new Integer(3); // 0 for no person // 1 for person
+  private Integer los_or_out = 1; // 0 for LOS // 1 for out
+  private Integer previous_frame = 3; // 0 for no person // 1 for person
 
 
-  Vibrator vibrator;
+  private Vibrator vibrator;
 
   public MultiBoxTracker(final Context context) {
 
@@ -184,13 +185,12 @@ public class MultiBoxTracker {
       Log.i(TAG, "No person in the frame -100"); // TAG= "ContentValues"
       vibrator.vibrate(100);
       person_found = 2;
+      previous_frame = 3; // Making it changing scenarios
     }
     else if (person_found == 1){ // When there is someone in the frame
 
       los_or_out = 2; // Initialized at every frame
 
-      // 0 Denotes "no person detected" // 1 denotes "person detected"
-      Integer detected_in_current_frame = new Integer(0);
       for (final TrackedRecognition recognition : trackedObjects) {
         RectF trackedPos = new RectF(recognition.location);
         if (!recognition.title.equals("person")) continue;
@@ -230,18 +230,21 @@ public class MultiBoxTracker {
           canvas.drawRect(trackedPos, boxPaint); // -- To have rectangular edges
 
 
-          final String labelString =
+          @SuppressLint("DefaultLocale") final String labelString =
                   !TextUtils.isEmpty(recognition.title)
-                          ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
-                          : String.format("%.2f", (100 * recognition.detectionConfidence));
+                          ? format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
+                          : format("%.2f", (100 * recognition.detectionConfidence));
 
           borderedText.drawText(
                   canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
 
+        // These if and else if statements just recognize what is the scenario
+        // Priority is given to Line of sight
+        // This is because if there is a person in the LOS, we need not tell the user that there is
+        //      a person around as well
 
-        // In LOS
+        // Person in LOS
         if (midRect.intersects(trackedPos.left, trackedPos.top, trackedPos.right, trackedPos.bottom)) {
-          vibrator.vibrate(500);
           los_or_out = 0;
 
           boxPaint.setColor(Color.GREEN); // Changing the box color to green
@@ -272,85 +275,9 @@ public class MultiBoxTracker {
       }
     }
   }
-/*
-*       // 0 Denotes "no person detected" // 1 denotes "person detected"
-      Integer detected_in_current_frame = new Integer(0);
-      for (final TrackedRecognition recognition : trackedObjects) {
-        RectF trackedPos = new RectF(recognition.location);
-        if (!recognition.title.equals("person")) continue;
-
-        //      Log.i(TAG, "canvasH :" + canvas.getHeight()+ " canvasW" +canvas.getWidth()); // canvasH :647 canvasW1280
-
-        float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 10.0f;
-
-        //===================================
-        // To identify if the object is a person
-        if (recognition.title.equals("person")) {
-          Matrix matrix = new Matrix();
-          Log.i(TAG, "FOUND!");
-
-          // For display size (640 * 480) having corresponding values as (865*640)
-          matrix.setScale((float) (480.0 / 640.0), (float) (640.0 / 480.0), (float) (640.0 / 2.0), (float) (480.0 / 2.0));
-          matrix.mapRect(trackedPos);
-
-          matrix.setRotate(90, (float) (640.0 / 2.0), (float) (((float) 480.0 / 2.0)));
-          matrix.mapRect(trackedPos);
-
-          matrix.setScale((float) (865.0 / 640.0), (float) (647.0 / 480.0));
-          matrix.mapRect(trackedPos);
-
-          //=======================================================
-          // WORKING CODE FOR 1280*720
-//        matrix.setScale((float)(647.0/1150.0), (float)(1150.0/647.0), (float)(1150.0/2.0), (float) (((float)647.0/2.0)));
-//        matrix.mapRect(trackedPos);
-//
-//        matrix.setRotate(90, (float)(1280.0/2.0), (float) (((float)647.0/2.0)));
-//        matrix.mapRect(trackedPos);
-          //=======================================================
-
-
-          boxPaint.setColor(recognition.color);
-
-//        canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
-          canvas.drawRect(trackedPos, boxPaint); // -- To have rectangular edges
-
-
-          final String labelString =
-                  !TextUtils.isEmpty(recognition.title)
-                          ? String.format("%s %.2f", recognition.title, (100 * recognition.detectionConfidence))
-                          : String.format("%.2f", (100 * recognition.detectionConfidence));
-
-          borderedText.drawText(
-                  canvas, trackedPos.left + cornerSize, trackedPos.top, labelString + "%", boxPaint);
-
-          // When the detected person is in the rectangle
-          if (midRect.intersects(trackedPos.left, trackedPos.top, trackedPos.right, trackedPos.bottom)) {
-            detected_in_current_frame = 1; // 1 denotes that the person is found in the frame
-            if (detected_realtime == 0) { // When there was no person in the mid-rectangle before
-              Log.i(TAG, "Person in the Line of Sight - 500"); // TAG= "ContentValues"
-              vibrator.vibrate(500);
-            }
-            boxPaint.setColor(Color.GREEN); // Changing the box color to green
-            canvas.drawRect(midRect, boxPaint);
-            detected_realtime = 1;
-          }
-
-        }
-      }
-      // If the person is not found in the current frame but was present in the previous frame
-      if (detected_in_current_frame == 0 && detected_realtime == 1) {
-        Log.i(TAG, "No person in the Line of sight anymore (but in the frame) - 250"); // TAG= "ContentValues"
-        vibrator.vibrate(250);
-        detected_realtime = 0;
-      }
-    }
-
-*
-*
-* */
 
   private void processResults(final List<Recognition> results) {
-    final List<Pair<Float, Recognition>> rectsToTrack = new LinkedList<Pair<Float, Recognition>>();
+    final List<Pair<Float, Recognition>> rectsToTrack = new LinkedList<>();
 
     screenRects.clear();
     final Matrix rgbFrameToScreen = new Matrix(getFrameToCanvasMatrix());
@@ -366,14 +293,14 @@ public class MultiBoxTracker {
       logger.v(
           "Result! Frame: " + result.getLocation() + " mapped to screen:" + detectionScreenRect);
 
-      screenRects.add(new Pair<Float, RectF>(result.getConfidence(), detectionScreenRect));
+      screenRects.add(new Pair<>(result.getConfidence(), detectionScreenRect));
 
       if (detectionFrameRect.width() < MIN_SIZE || detectionFrameRect.height() < MIN_SIZE) {
         logger.w("Degenerate rectangle! " + detectionFrameRect);
         continue;
       }
 
-      rectsToTrack.add(new Pair<Float, Recognition>(result.getConfidence(), result));
+      rectsToTrack.add(new Pair<>(result.getConfidence(), result));
     }
 
     if (rectsToTrack.isEmpty()) {
