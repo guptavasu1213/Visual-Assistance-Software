@@ -25,3 +25,4 @@ Click the Run button (the green arrow) or select Run > Run 'android' from the to
 * If it asks you to use Instant Run, click Proceed Without Instant Run.
 
 ### References
+- **[Tensorflow Lite Object Detection](https://github.com/tensorflow/examples/tree/master/lite/examples/object_detection/android)** 
