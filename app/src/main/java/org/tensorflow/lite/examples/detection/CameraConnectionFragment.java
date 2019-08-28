@@ -78,6 +78,7 @@ public class CameraConnectionFragment extends Fragment {
   /** Conversion from screen rotation to JPEG orientation. */
   private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
 
+  
   private static final String FRAGMENT_DIALOG = "dialog";
 
   static {

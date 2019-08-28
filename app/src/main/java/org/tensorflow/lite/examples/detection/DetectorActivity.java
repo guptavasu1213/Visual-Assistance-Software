@@ -62,7 +62,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final boolean MAINTAIN_ASPECT = false;
   // ============================
   // Screensize of MOVERIO BT-300 is 1280*720
-  private static final Size DESIRED_PREVIEW_SIZE = new Size(640, 480);
+  private static final Size DESIRED_PREVIEW_SIZE = new Size(1280, 720);
   // ============================
   private static final boolean SAVE_PREVIEW_BITMAP = true;
   private static final float TEXT_SIZE_DIP = 10;
@@ -147,14 +147,12 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     trackingOverlay.addCallback(
             canvas -> {
                 //====================================
-                Log.i(TAG, "DRAW CALLED");
                 tracker.draw(canvas, c1); // Passing the context with the canvas
                 //====================================
                 if (isDebug()) {
                 tracker.drawDebug(canvas);
               }
             });
-
     tracker.setFrameConfiguration(previewWidth, previewHeight, sensorOrientation);
   }
 
@@ -249,7 +247,7 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
     return DESIRED_PREVIEW_SIZE;
   }
 
-  // Which detection model to use: by default uses Tensorflow Object Detection API frozen
+  // Which detection model to use: by default uses TensorFlow Object Detection API frozen
   // checkpoints.
   private enum DetectorMode {
     TF_OD_API
