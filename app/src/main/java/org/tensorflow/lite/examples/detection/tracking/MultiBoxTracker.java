@@ -144,11 +144,11 @@ public class MultiBoxTracker {
     vibrator = (Vibrator) context.getSystemService(VIBRATOR_SERVICE);
 
     // DRAWING THE MIDDLE RECTANGLE- representing line of sight for 1280*720
-    final RectF midRect = new RectF((float)(1147.0/2.0)-80,(float)0,(float)(1147.0/2.0)+20,(float)canvas.getHeight());
+//    final RectF midRect = new RectF((float)(1147.0/2.0)-50,(float)0,(float)(1147.0/2.0)+50,(float)canvas.getHeight());
 //        final RectF midRect = new RectF((float)(canvas.getWidth()/2)-150,(float)0,(float)(canvas.getWidth()/2)-50,(float)canvas.getHeight());
 
     // Hardcoding values for EPSON-BT-300 device
-//      final RectF midRect = new RectF((float)(865.0/2.0)-100,(float)0,(float)(865.0/2.0),(float)canvas.getHeight());
+      final RectF midRect = new RectF((float)(865.0/2.0)-50,(float)0,(float)(865.0/2.0)+50,(float)canvas.getHeight());
       boxPaint.setColor(Color.RED);
       canvas.drawRect(midRect, boxPaint);
 
@@ -194,37 +194,33 @@ public class MultiBoxTracker {
         RectF trackedPos = new RectF(recognition.location);
         if (!recognition.title.equals("person")) continue;
 
-        //      Log.i(TAG, "canvasH :" + canvas.getHeight()+ " canvasW" +canvas.getWidth()); // canvasH :647 canvasW1280
-
         float cornerSize = Math.min(trackedPos.width(), trackedPos.height()) / 10.0f;
-
 
         // Scaling the rectangle matrix according to the screen size
           Matrix matrix = new Matrix();
 
           // For display size (640 * 480) having corresponding values as (865*640)
-//          matrix.setScale((float) (480.0 / 640.0), (float) (640.0 / 480.0), (float) (640.0 / 2.0), (float) (480.0 / 2.0));
-//          matrix.mapRect(trackedPos);
-//
-//          matrix.setRotate(90, (float) (640.0 / 2.0), (float) (((float) 480.0 / 2.0)));
-//          matrix.mapRect(trackedPos);
-//
-//          matrix.setScale((float) (865.0 / 640.0), (float) (647.0 / 480.0));
-//          matrix.mapRect(trackedPos);
+          matrix.setScale((float) (480.0 / 640.0), (float) (640.0 / 480.0), (float) (640.0 / 2.0), (float) (480.0 / 2.0));
+          matrix.mapRect(trackedPos);
+
+          matrix.setRotate(90, (float) (640.0 / 2.0), (float) (((float) 480.0 / 2.0)));
+          matrix.mapRect(trackedPos);
+
+          matrix.setScale((float) (865.0 / 640.0), (float) (647.0 / 480.0));
+          matrix.mapRect(trackedPos);
 
           //=======================================================
           // WORKING CODE FOR 1280*720
-        matrix.setScale((float)(647.0/1150.0), (float)(1150.0/647.0), (float)(1150.0/2.0), (float) (((float)647.0/2.0)));
-        matrix.mapRect(trackedPos);
-
-        matrix.setRotate(90, (float)(1280.0/2.0), (float) (((float)647.0/2.0)));
-        matrix.mapRect(trackedPos);
+//        matrix.setScale((float)(647.0/1150.0), (float)(1150.0/647.0), (float)(1150.0/2.0), (float) (((float)647.0/2.0)));
+//        matrix.mapRect(trackedPos);
+//
+//        matrix.setRotate(90, (float)(1280.0/2.0), (float) (((float)647.0/2.0)));
+//        matrix.mapRect(trackedPos);
           //=======================================================
 
 
           boxPaint.setColor(recognition.color);
 
-//        canvas.drawRoundRect(trackedPos, cornerSize, cornerSize, boxPaint);
           canvas.drawRect(trackedPos, boxPaint); // -- To have rectangular edges
 
 
