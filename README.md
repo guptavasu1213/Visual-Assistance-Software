@@ -6,6 +6,7 @@ This is an app created for EPSON Moverio BT-300 smart glasses to aid the visuall
 ![](https://github.com/guptavasu1213/visual-assistance-software/blob/master/screenshot_1.png)
 
 The red box in the middle of the screen indicates the line of sight of the visually impaired. 
+
 The controller gives 3 types of vibrations to notify the user about the people in the surroundings. 
 - Vibration A is a 500ms long buzz in the controller which indicates the presence of a person the line of sight of the user. 
 - Vibration B conveys the absence of people in the frame(scene) by giving a 100ms vibration. 
