@@ -61,8 +61,8 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
   private static final float MINIMUM_CONFIDENCE_TF_OD_API = 0.50f;
   private static final boolean MAINTAIN_ASPECT = false;
   // ============================
-  // Screensize of MOVERIO BT-300 is 1280*720
-  private static final Size DESIRED_PREVIEW_SIZE = new Size(1280, 720);
+  // Screensize of MOVERIO BT-300 is 1280*720 // Using smaller size to avoid the lag
+  private static final Size DESIRED_PREVIEW_SIZE = new Size(640, 480);
   // ============================
   private static final boolean SAVE_PREVIEW_BITMAP = true;
   private static final float TEXT_SIZE_DIP = 10;
@@ -193,7 +193,6 @@ public class DetectorActivity extends CameraActivity implements OnImageAvailable
               matrix.postRotate(270);
 
               Bitmap rotatedBitmap = Bitmap.createBitmap(croppedBitmap, 0, 0, croppedBitmap.getWidth() , croppedBitmap.getHeight(), matrix, true);
-//              Log.i(TAG, "WIDTH AND HEIGHT OF BITMAP: "+rotatedBitmap.getWidth()+ "  "+rotatedBitmap.getHeight());
 
               final List<Classifier.Recognition> results = detector.recognizeImage(rotatedBitmap);
   //================================
