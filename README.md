@@ -3,6 +3,8 @@
 ### Overview
 This is an app created for EPSON Moverio BT-300 smart glasses to aid the visually impaired avoid collisions. The glasses are attached to a controller running on Android™ 5.1. The device camera is used perform real-time object detection on the eyeglasses. The app uses **[TensorFlow Lite](https://github.com/tensorflow/examples/tree/master/lite)**, an open source deep learning framework for on device inference. 
 
+![](https://github.com/guptavasu1213/visual-assistance-software/blob/master/screenshot_1.png)
+
 The red box in the middle of the screen indicates the line of sight of the visually impaired. 
 The controller gives 3 types of vibrations to notify the user about the people in the surroundings. 
 - Vibration A is a 500ms long buzz in the controller which indicates the presence of a person the line of sight of the user. 
