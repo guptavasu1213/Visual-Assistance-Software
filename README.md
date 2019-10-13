@@ -15,6 +15,7 @@ The controller gives 3 types of vibrations to notify the user about the people i
 
 To create a positive user experience, every vibration is only given once after the detection. This is because if the controller keeps buzzing 24x7, it would prove to be annoying for the user.
 
+[]!(https://github.com/guptavasu1213/visual-assistance-software/blob/master/test_screenshots/Screenshot_2019-09-04-20-43-08.png)
 ## Build the demo using Android Studio
 
 ### Prerequisites
