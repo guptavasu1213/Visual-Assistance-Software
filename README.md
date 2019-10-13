@@ -1,6 +1,7 @@
 # Visual Assistance Software for the Visually Impaired
 
 ### Overview
+![](https://github.com/guptavasu1213/visual-assistance-software/blob/master/IMG_2989.jpg)
 This is an app created for EPSON Moverio BT-300 smart glasses to aid the visually impaired avoid collisions. The glasses are attached to a controller running on Android™ 5.1. The device camera is used perform real-time object detection on the eyeglasses. The app uses **[TensorFlow Lite](https://github.com/tensorflow/examples/tree/master/lite)**, an open source deep learning framework for on device inference. 
 
 ![](https://github.com/guptavasu1213/visual-assistance-software/blob/master/screenshot_1.png)
